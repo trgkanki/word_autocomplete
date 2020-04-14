@@ -1,4 +1,10 @@
 
-# anki_plugins [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4YEDX8978UQUG)
+# Word autocomplete
 
-Obsolete monorepo. See each addon's repo [here](https://github.com/trgkanki)
+[![Donate via patreon](https://img.shields.io/badge/patreon-donate-green.svg)](https://www.patreon.com/trgk)
+[![AnkiWeb page](https://img.shields.io/badge/AnkiWeb-addon-blue.svg)](https://ankiweb.net/shared/info/1709973686)
+
+Create an word autocompletion field.
+
+![Example image](autocompleter.png)
+
