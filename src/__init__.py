@@ -43,7 +43,7 @@ def initWordSet(col):
     return wordSet
 
 
-def onLoadNote(self, focusTo=None):
+def afterSetNote(self, note, hide=True, focusTo=None):
     col = self.mw.col
     wordSet = initWordSet(col)
 
@@ -52,4 +52,4 @@ def onLoadNote(self, focusTo=None):
     self.web.eval("wordSet = [" + ''.join('"%s", ' % w for w in wordSet) + "]")
 
 
-Editor.loadNote = wrap(Editor.loadNote, onLoadNote, 'after')
+Editor.setNote = wrap(Editor.setNote, afterSetNote, 'after')
