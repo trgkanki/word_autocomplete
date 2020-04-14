@@ -4,10 +4,7 @@
   "description": "template for trgkanki's addon",
   "scripts": {
     "jsdev": "webpack -w",
-    "build": "cd src; bestzip ../dist.zip *; cd ..",
-    "dist": "npm-run-all dist:pre build dist:post",
-    "dist:pre": "npm-auto-version",
-    "dist:post": "git push origin --tags"
+    "build": "cd src && bestzip ../dist.zip *"
   },
   "keywords": [
     "anki",
@@ -30,6 +27,7 @@
     "husky": "^4.2.5",
     "jquery": "^3.5.0",
     "lint-staged": "^10.1.3",
+    "npm-auto-version": "^1.0.0",
     "npm-run-all": "^4.1.5",
     "ts-loader": "^6.2.2",
     "typescript": "^3.8.3",
