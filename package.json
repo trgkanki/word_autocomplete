@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "description": "template for trgkanki's addon",
   "scripts": {
-    "jsdev": "webpack -w",
-    "build": "cd src && bestzip ../dist.zip *"
+    "dev:js": "webpack -w",
+    "build:js": "webpack",
+    "build": "npm run build:js && cd src && bestzip ../dist.zip *"
   },
   "keywords": [
     "anki",

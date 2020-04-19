@@ -9,29 +9,35 @@ if (!window._wcInitialized) {
   window._wcInitialized = true
   $('body').on('keydown', '[contenteditable]', function (event) {
     const $el = getAutoCompleterSpan()
+    let { keyCode } = event
 
-    if (event.keyCode === KeyCode.CTRL) ctrlPressed = true
+    if (keyCode === KeyCode.CTRL) ctrlPressed = true
 
-    // Ctrl 1-9
+    // Bug #2. Numeric keypad and Number key have differeny keycode.
+    if (KeyCode.NUMPAD_0 <= event.keyCode && event.keyCode <= KeyCode.NUMPAD_9) {
+      keyCode = (keyCode - KeyCode.NUMPAD_0 + KeyCode.DIGIT_0)
+    }
+
+    //  Ctrl 1-9
     if (
       ctrlPressed &&
-          (KeyCode.DIGIT_0 <= event.keyCode && event.keyCode <= KeyCode.DIGIT_9) &&
+          (KeyCode.DIGIT_0 <= keyCode && keyCode <= KeyCode.DIGIT_9) &&
           $el.data('autocomplete')
     ) {
-      queueAutocompleteIssue(event.keyCode - KeyCode.DIGIT_0)
+      queueAutocompleteIssue(keyCode - KeyCode.DIGIT_0)
       event.preventDefault()
       return
     }
 
     // ESC -> clear autocomplete
-    if (event.keyCode === KeyCode.ESC && $el.data('autocomplete')) {
+    if (keyCode === KeyCode.ESC && $el.data('autocomplete')) {
       clearAutocompleteSpan()
       event.preventDefault()
       return
     }
 
     // Tab
-    if (event.keyCode === KeyCode.TAB && $el.data('autocomplete')) {
+    if (keyCode === KeyCode.TAB && $el.data('autocomplete')) {
       queueAutocompleteIssue(0)
       event.preventDefault()
     }
