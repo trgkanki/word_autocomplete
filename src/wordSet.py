@@ -2,7 +2,7 @@ import re
 from anki.utils import splitFields, joinFields
 
 wordSetCache = {}
-alphaNumeric = re.compile("[a-zA-Z][a-zA-Z0-9]{4,}")
+alphaNumeric = re.compile("[a-zA-ZÀ-ú][a-zA-ZÀ-ú0-9]{4,}")
 
 def createWordSet(col):
     """ Initialize wordSet from preexisting collections """

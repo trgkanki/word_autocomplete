@@ -28,7 +28,7 @@ def afterSetNote(self, note, hide=True, focusTo=None):
     wcAdapterJs = readResource('js/main.min.js')
     self.web.eval(wcAdapterJs)
     self.web.eval('_wcInit("%s", "%s")' % (firstCommitHotkey, numberedCommitHotkey))
-    self.web.eval("wordSet = [" + ''.join('"%s", ' % w for w in wordSet) + "]")
+    self.web.eval("_wcInitWordset([" + ''.join('"%s", ' % w for w in wordSet) + "])")
 
 
 Editor.setNote = wrap(Editor.setNote, afterSetNote, 'after')

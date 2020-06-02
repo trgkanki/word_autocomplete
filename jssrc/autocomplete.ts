@@ -2,11 +2,19 @@ import { ranker } from './ranker'
 import $ from 'jquery'
 import { replaceCurrentQuery } from './query'
 
-declare let currentField: Node | null
-declare let wordSet: string[]
+const removeDiacritics = require('diacritics').remove
 
-export function getAutocompleteList (needle: string, wordList: string[], callback: (candidates: string[]) => void): void {
-  const N = wordList.length
+declare let currentField: Node | null
+let wordSet: string[] = [] // Original word set
+let normalizedWordSet: string[] = [] // One used for autocomplete matching
+
+window._wcInitWordset = function (newWordset: string[]): void {
+  wordSet = newWordset
+  normalizedWordSet = newWordset.map(s => removeDiacritics(s))
+}
+
+export function getAutocompleteList (needle: string, callback: (candidates: string[]) => void): void {
+  const N = wordSet.length
   const acceptanceTable = new Array(N)
   const indirectSorter = new Array(N)
 
@@ -15,7 +23,7 @@ export function getAutocompleteList (needle: string, wordList: string[], callbac
 
   function checker (): void {
     for (let j = 0; j < checkPerLoop; j++) {
-      if (i === wordList.length) {
+      if (i === wordSet.length) {
         indirectSorter.sort(function (a, b) {
           return acceptanceTable[b] - acceptanceTable[a]
         })
@@ -24,12 +32,12 @@ export function getAutocompleteList (needle: string, wordList: string[], callbac
         for (i = 0; i < Math.min(N, 5); i++) {
           const idx = indirectSorter[i]
           if (acceptanceTable[idx] < 0) break
-          ret.push(wordList[idx])
+          ret.push(wordSet[idx])
         }
         return callback(ret)
       }
       indirectSorter[i] = i
-      acceptanceTable[i] = ranker(needle, wordList[i])
+      acceptanceTable[i] = ranker(needle, normalizedWordSet[i])
       i++
     }
     setTimeout(checker, 1)
@@ -80,6 +88,9 @@ export function issueAutocomplete (index: number): void {
 }
 
 export function queueAutocomplete (query: string | null): void {
+  query = removeDiacritics(query)
+  console.log(query)
+
   if (isFindingAutocomplete) {
     anotherAutocompleteQueued = query
     return
@@ -114,7 +125,7 @@ export function queueAutocomplete (query: string | null): void {
 
   var $el = getAutoCompleterSpan()
   isFindingAutocomplete = true
-  getAutocompleteList(query, wordSet, function (autocomplete) {
+  getAutocompleteList(query, function (autocomplete) {
     if (autocomplete.length === 0 || !currentField) {
       clearAutocompleteSpan()
     } else {
