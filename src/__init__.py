@@ -11,6 +11,8 @@ Code borrowed from:
 from aqt.editor import Editor
 from anki.hooks import wrap
 
+from .wordSet import createWordSet
+
 import re
 import os
 
@@ -21,31 +23,9 @@ def readResource(filename):
     return open(inputFilePath, 'r', encoding='utf-8').read()
 
 
-wordSet = set()
-wordSetDict = {}
-alphaNumeric = re.compile("[a-zA-Z][a-zA-Z0-9]{4,}")
-
-
-def initWordSet(col):
-    """ Initialize wordSet from preexisting collections """
-    global wordSet, wordSetDict, alphaNumeric
-
-    wordSet.clear()
-
-    for (field,) in col.db.execute("select flds from notes"):
-        try:
-            wordSet.update(wordSetDict[field])
-        except KeyError:
-            words = [w.lower() for w in alphaNumeric.findall(field)]
-            wordSetDict[field] = words
-            wordSet.update(words)
-
-    return wordSet
-
 
 def afterSetNote(self, note, hide=True, focusTo=None):
-    col = self.mw.col
-    wordSet = initWordSet(col)
+    wordSet = createWordSet(self.mw.col)
 
     wcAdapterJs = readResource('main.min.js')
     self.web.eval(wcAdapterJs)
