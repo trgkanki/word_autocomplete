@@ -1,6 +1,6 @@
 {
   "name": "word_autocomplete",
-  "version": "20.5.4i8",
+  "version": "20.6.2i59",
   "description": "template for trgkanki's addon",
   "scripts": {
     "dev:js": "webpack -w",
