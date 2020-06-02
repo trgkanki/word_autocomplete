@@ -1,5 +1,4 @@
 import re
-from .stripHTML import stripHTML
 from anki.utils import splitFields, joinFields
 
 wordSetCache = {}
