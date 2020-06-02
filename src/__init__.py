@@ -13,6 +13,7 @@ from anki.hooks import wrap
 from aqt.utils import askUser
 
 from .utils.resource import readResource
+from .utils.configrw import getConfig
 from .wordSet import createWordSet
 
 import re
@@ -21,8 +22,12 @@ import os
 def afterSetNote(self, note, hide=True, focusTo=None):
     wordSet = createWordSet(self.mw.col)
 
+    firstCommitHotkey = getConfig('firstCommitHotkey', 'tab')
+    numberedCommitHotkey = getConfig('numberedCommitHotkey', 'ctrl+?')
+
     wcAdapterJs = readResource('js/main.min.js')
     self.web.eval(wcAdapterJs)
+    self.web.eval('_wcInit("%s", "%s")' % (firstCommitHotkey, numberedCommitHotkey))
     self.web.eval("wordSet = [" + ''.join('"%s", ' % w for w in wordSet) + "]")
 
 

@@ -52,5 +52,7 @@
       "black"
     ]
   },
-  "dependencies": {}
+  "dependencies": {
+    "hotkeys-js": "^3.8.1"
+  }
 }
