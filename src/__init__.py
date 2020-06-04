@@ -20,6 +20,12 @@ import re
 import os
 
 def afterSetNote(self, note, hide=True, focusTo=None):
+    if not self.web:
+        # This can happen by other addon's fault. afterSetNote shouldn't
+        # throw exception on this case, as with error user cannot close
+        # Anki with editor open, losing all the progress he/she've made.
+        return
+
     wordSet = createWordSet(self.mw.col)
 
     firstCommitHotkey = getConfig('firstCommitHotkey', 'tab')
