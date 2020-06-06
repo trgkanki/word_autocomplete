@@ -30,9 +30,9 @@ def createWordSet(col):
             if mid == iocc_mid:
                 field = joinFields(splitFields(field)[1:])
 
-            field = re.sub(r'\[sound:.*?\]', '', field)
-            field = re.sub(r'<\w*script.*?>(.|\n)*?<\s*/script\s*>', '', field)
-            field = re.sub(r'<.*?>', '', field)
+            field = re.sub(r'\[sound:.*?\]', ' ', field)
+            field = re.sub(r'<\w*script.*?>(.|\n)*?<\s*/script\s*>', ' ', field)
+            field = re.sub(r'<.*?>', ' ', field)
             words = [w.lower() for w in alphaNumeric.findall(field)]
             wordSetCache[rawField] = words
             wordSet.update(words)
