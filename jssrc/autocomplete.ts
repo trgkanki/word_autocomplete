@@ -61,7 +61,7 @@ export function getAutoCompleterSpan (): JQuery<HTMLElement> {
 export function clearAutocompleteSpan (): void {
   const $el = getAutoCompleterSpan()
   $el.data('autocomplete', null)
-  $el.html('-------')
+  $el.addClass('hidden')
 }
 
 let isFindingAutocomplete = false
@@ -127,7 +127,6 @@ export function queueAutocomplete (query: string | null): void {
     if (autocomplete.length === 0 || !currentField) {
       clearAutocompleteSpan()
     } else {
-      $el.css('display', 'inline-block')
       let html = `
         <span class='candidate' title='Press ${config.firstCommitHotkey}'>
           ${autocomplete[0]}
@@ -149,6 +148,7 @@ export function queueAutocomplete (query: string | null): void {
         left,
         top
       })
+      $el.removeClass('hidden')
     }
     isFindingAutocomplete = false
     popTaskQueue()
