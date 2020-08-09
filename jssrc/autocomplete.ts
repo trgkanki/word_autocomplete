@@ -87,8 +87,7 @@ export function queueAutocompleteIssue (index: number): void {
 const candidateTitleList = '123456789'
 
 export function queueAutocomplete (query: string | null): void {
-  query = removeDiacritics(query)
-  console.log(query)
+  query = query ? removeDiacritics(query) : query
 
   if (isFindingAutocomplete) {
     anotherAutocompleteQueued = query
