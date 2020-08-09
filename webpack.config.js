@@ -10,13 +10,28 @@ module.exports = {
     libraryTarget: 'window',
     library: 'mainLib'
   },
-  mode: 'production',
+  mode: process.env.NODE_ENV || 'production',
   devtool: 'source-map',
   module: {
     rules: [
       {
         test: /\.ts$/,
         use: ['ts-loader']
+      },
+      {
+        test: /\.scss$/,
+        use: [
+          'style-loader',
+          'css-loader',
+          'sass-loader'
+        ]
+      },
+      {
+        test: /\.css$/,
+        use: [
+          'style-loader',
+          'css-loader'
+        ]
       }
     ]
   },

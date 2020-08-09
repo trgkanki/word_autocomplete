@@ -15,9 +15,11 @@ from aqt.utils import askUser
 from .utils.resource import readResource
 from .utils.configrw import getConfig
 from .wordSet import createWordSet
+from .utils import openChangelog
 
 import re
 import os
+
 
 def afterSetNote(self, note, hide=True, focusTo=None):
     if not self.web:
@@ -28,13 +30,13 @@ def afterSetNote(self, note, hide=True, focusTo=None):
 
     wordSet = createWordSet(self.mw.col)
 
-    firstCommitHotkey = getConfig('firstCommitHotkey', 'tab')
-    numberedCommitHotkey = getConfig('numberedCommitHotkey', 'ctrl+?')
+    firstCommitHotkey = getConfig("firstCommitHotkey", "tab")
+    numberedCommitHotkey = getConfig("numberedCommitHotkey", "ctrl+?")
 
-    wcAdapterJs = readResource('js/main.min.js')
+    wcAdapterJs = readResource("js/main.min.js")
     self.web.eval(wcAdapterJs)
     self.web.eval('_wcInit("%s", "%s")' % (firstCommitHotkey, numberedCommitHotkey))
-    self.web.eval("_wcInitWordset([" + ''.join('"%s", ' % w for w in wordSet) + "])")
+    self.web.eval("_wcInitWordset([" + "".join('"%s", ' % w for w in wordSet) + "])")
 
 
-Editor.setNote = wrap(Editor.setNote, afterSetNote, 'after')
+Editor.setNote = wrap(Editor.setNote, afterSetNote, "after")
