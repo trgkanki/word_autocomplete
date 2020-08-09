@@ -16,6 +16,16 @@ export function getCaretCharacterOffsetWithin (element: Node): number {
   }
 }
 
+export function getCaretPositionByViewport () {
+  const selection = window.getSelection()
+  if (!selection) return { x: 0, y: 0 }
+  const el = document.createElement('span')
+  selection.getRangeAt(0).insertNode(el)
+  const rect = el.getBoundingClientRect()
+  el.remove()
+  return { x: rect.x, y: rect.y }
+}
+
 // https://github.com/gr2m/contenteditable-autocomplete
 export function setCursorAt (node: Node, position: number): void {
   const range = document.createRange()

@@ -3,6 +3,7 @@ import $ from 'jquery'
 import { replaceCurrentQuery } from './query'
 import config from './config'
 import './style.scss'
+import { getCaretPositionByViewport } from './caret'
 
 const removeDiacritics = require('diacritics').remove
 
@@ -139,9 +140,16 @@ export function queueAutocomplete (query: string | null): void {
             ${autocomplete[i]}
           </span>`
       }
+
+      const { x: caretX, y: caretY } = getCaretPositionByViewport()
+      const left = caretX + pageXOffset
+      const top = pageYOffset + ((caretY < window.innerHeight - 100) ? caretY + 30 : Math.max(0, caretY - 30))
       $el.html(html)
       $el.data('autocomplete', autocomplete)
-      $el.insertAfter(currentField)
+      $el.css({
+        left,
+        top
+      })
     }
     isFindingAutocomplete = false
     popTaskQueue()
