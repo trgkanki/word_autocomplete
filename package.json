@@ -1,6 +1,6 @@
 {
   "name": "word_autocomplete",
-  "version": "20.6.2i59",
+  "version": "20.8.9i116",
   "description": "template for trgkanki's addon",
   "scripts": {
     "dev:js": "cross-env NODE_ENV=development webpack -w --progress",
