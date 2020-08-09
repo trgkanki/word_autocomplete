@@ -1,7 +1,7 @@
 import { ranker } from './ranker'
 import $ from 'jquery'
 import { replaceCurrentQuery } from './query'
-import './style.css'
+import './style.scss'
 
 const removeDiacritics = require('diacritics').remove
 
@@ -82,6 +82,8 @@ export function queueAutocompleteIssue (index: number): void {
   else issueAutocompleteQueued = index
 }
 
+const candidateTitleList = '123456789'
+
 export function queueAutocomplete (query: string | null): void {
   query = removeDiacritics(query)
   console.log(query)
@@ -125,9 +127,9 @@ export function queueAutocomplete (query: string | null): void {
       clearAutocompleteSpan()
     } else {
       $el.css('display', 'inline-block')
-      let html = "<b title='Press Tab'>" + autocomplete[0] + '</b>'
+      let html = `<b title='Press Tab'>${autocomplete[0]}</b>`
       for (let i = 1; i < autocomplete.length; i++) {
-        html += " / <span title='Press Ctrl+" + i + "'>" + autocomplete[i] + '</span>'
+        html += ` / <span title='Press Ctrl+${i}'><span class='candidate-number'>${candidateTitleList[i]}</span>${autocomplete[i]}</span>`
       }
       $el.html(html)
       $el.data('autocomplete', autocomplete)
