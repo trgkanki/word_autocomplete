@@ -128,10 +128,13 @@ export function queueAutocomplete (query: string | null): void {
       clearAutocompleteSpan()
     } else {
       $el.css('display', 'inline-block')
-      let html = `<b title='Press ${config.firstCommitHotkey}'>${autocomplete[0]}</b>`
+      let html = `
+        <span class='candidate' title='Press ${config.firstCommitHotkey}'>
+          ${autocomplete[0]}
+        </span>`
       for (let i = 1; i < autocomplete.length; i++) {
         html += ` /
-          <span title='Press ${config.numberedCommitHotkey.replace('?', (i + 1).toString())}'>
+          <span class='candidate' title='Press ${config.numberedCommitHotkey.replace('?', (i + 1).toString())}'>
             <span class='candidate-number'>${candidateTitleList[i]}</span>
             ${autocomplete[i]}
           </span>`

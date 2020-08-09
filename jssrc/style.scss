@@ -22,3 +22,13 @@
     color: #ccc;
   }
 }
+
+.candidate {
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:first-of-type {
+    font-weight: bold;
+  }
+}
