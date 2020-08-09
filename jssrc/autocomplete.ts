@@ -1,6 +1,7 @@
 import { ranker } from './ranker'
 import $ from 'jquery'
 import { replaceCurrentQuery } from './query'
+import './style.css'
 
 const removeDiacritics = require('diacritics').remove
 
@@ -46,15 +47,9 @@ export function getAutocompleteList (needle: string, callback: (candidates: stri
 }
 
 export function getAutoCompleterSpan (): JQuery<HTMLElement> {
-  var $el = $('.wautocompleter')
+  let $el = $('.wautocompleter')
   if ($el.length === 0) {
     $el = $('<span></span>')
-      .css({
-        margin: '.3em',
-        padding: '.3em',
-        'background-color': '#ddd',
-        border: '1px solid black'
-      })
       .addClass('wautocompleter')
       .appendTo('body')
   }
@@ -62,29 +57,29 @@ export function getAutoCompleterSpan (): JQuery<HTMLElement> {
 }
 
 export function clearAutocompleteSpan (): void {
-  var $el = getAutoCompleterSpan()
+  const $el = getAutoCompleterSpan()
   $el.data('autocomplete', null)
   $el.html('-------')
 }
 
-var isFindingAutocomplete = false
-var anotherAutocompleteQueued: string | null = null
-var issueAutocompleteQueued: number | null = null
-
-export function queueAutocompleteIssue (index: number): void {
-  if (!isFindingAutocomplete) issueAutocomplete(index)
-  else issueAutocompleteQueued = index
-}
+let isFindingAutocomplete = false
+let anotherAutocompleteQueued: string | null = null
+let issueAutocompleteQueued: number | null = null
 
 export function issueAutocomplete (index: number): void {
-  var $el = getAutoCompleterSpan()
-  var candidates = $el.data('autocomplete')
+  const $el = getAutoCompleterSpan()
+  const candidates = $el.data('autocomplete')
   if (candidates == null) return // No autocomplete available.
-  var candidateIndex = index
+  const candidateIndex = index
   if (candidates.length > candidateIndex) {
     replaceCurrentQuery($el.data('autocomplete')[candidateIndex])
     clearAutocompleteSpan()
   }
+}
+
+export function queueAutocompleteIssue (index: number): void {
+  if (!isFindingAutocomplete) issueAutocomplete(index)
+  else issueAutocompleteQueued = index
 }
 
 export function queueAutocomplete (query: string | null): void {
@@ -123,15 +118,15 @@ export function queueAutocomplete (query: string | null): void {
     return
   }
 
-  var $el = getAutoCompleterSpan()
+  const $el = getAutoCompleterSpan()
   isFindingAutocomplete = true
   getAutocompleteList(query, function (autocomplete) {
     if (autocomplete.length === 0 || !currentField) {
       clearAutocompleteSpan()
     } else {
       $el.css('display', 'inline-block')
-      var html = "<b title='Press Tab'>" + autocomplete[0] + '</b>'
-      for (var i = 1; i < autocomplete.length; i++) {
+      let html = "<b title='Press Tab'>" + autocomplete[0] + '</b>'
+      for (let i = 1; i < autocomplete.length; i++) {
         html += " / <span title='Press Ctrl+" + i + "'>" + autocomplete[i] + '</span>'
       }
       $el.html(html)

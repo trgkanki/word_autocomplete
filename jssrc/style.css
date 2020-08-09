@@ -1,0 +1,16 @@
+.wautocompleter {
+  background-color: #ddd;
+  border: 1px solid #000;
+  color: #000;
+  margin: 0.3em;
+  padding: 0.3em;
+}
+
+/* stylelint-disable-next-line */
+.nightMode .wautocompleter {
+  background-color: #222;
+  border: 1px solid #aaa;
+  color: #fff;
+  margin: 0.3em;
+  padding: 0.3em;
+}
