@@ -1,7 +1,10 @@
 import { getCaretParentElement, getCaretCharacterOffsetWithin, setCursorAt } from './caret'
 import $ from 'jquery'
+const removeDiacritics = require('diacritics').remove
 
 function getWordStart (text: string, from: number, allowTrailingSpaces = false): number[] | null {
+  text = removeDiacritics(text)
+
   let endedWithAlphabet = false
   let j = from - 1
   let spaces = 0
