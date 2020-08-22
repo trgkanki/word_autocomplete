@@ -16,6 +16,7 @@ from .utils.resource import readResource
 from .utils.configrw import getConfig
 from .wordSet import createWordSet
 from .utils import openChangelog
+from .utils import uuid  # duplicate UUID checked here
 
 import re
 import os
