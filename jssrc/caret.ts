@@ -6,7 +6,8 @@ export function getCaretParentElement (): Node | undefined {
 export function getCaretCharacterOffsetWithin (element: Node): number {
   const selection = window.getSelection()
   if (selection && selection.rangeCount > 0) {
-    const range = selection.getRangeAt(0)!
+    const range = selection.getRangeAt(0)
+    if (!range) return 0
     const preCaretRange = range.cloneRange()
     preCaretRange.selectNodeContents(element)
     preCaretRange.setEnd(range.endContainer, range.endOffset)
@@ -29,7 +30,8 @@ export function getCaretPositionByViewport () {
 // https://github.com/gr2m/contenteditable-autocomplete
 export function setCursorAt (node: Node, position: number): void {
   const range = document.createRange()
-  const sel = window.getSelection()!
+  const sel = window.getSelection()
+  if (!sel) return
   const textNode = node.childNodes.length ? node.childNodes[0] : node
   position = Math.min(textNode.textContent?.length || 0, position)
   range.setStart(textNode, position)

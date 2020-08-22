@@ -39,12 +39,12 @@ window._wcInit = function (firstCommitHotkey: string, numberedCommitHotkey: stri
   })
 
   // Autocomplete candidate windows
-  $(document).on('input', '[contenteditable]', function (_event) {
+  $(document).on('input', '[contenteditable]', function () {
     const query = getCurrentQuery()
     queueAutocomplete(query)
   })
 
-  $(document).on('blur', '[contenteditable]', function (_event) {
+  $(document).on('blur', '[contenteditable]', function () {
     clearAutocompleteSpan()
   })
 }
