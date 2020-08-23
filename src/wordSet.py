@@ -1,8 +1,23 @@
+# Copyright 2020 phu54321
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import re
 from .utils.configrw import getConfig
 from anki.utils import splitFields, joinFields
 
 wordSetCache = {}
+blacklistedNoteIds = set()
 alphaNumeric = re.compile("[a-zA-ZÀ-ú][a-zA-ZÀ-ú0-9]{4,}")
 
 
@@ -40,17 +55,21 @@ def createWordSet(col):
             return shouldIgnore
 
     for (nid, field, mid) in col.db.execute("select id, flds, mid from notes"):
-        if all(
-            shouldIgnoreDid(did)
-            for did in col.db.list(
-                "select did from cards where nid = ? order by ord", nid
-            )
-        ):
+        if nid in blacklistedNoteIds:
             continue
 
         try:
             wordSet.update(wordSetCache[field])
         except KeyError:
+            if all(
+                shouldIgnoreDid(did)
+                for did in col.db.list(
+                    "select did from cards where nid = ? order by ord", nid
+                )
+            ):
+                blacklistedNoteIds.add(nid)
+                continue
+
             rawField = field
 
             # Ignore first field of image occlusion enhanced note
@@ -66,3 +85,8 @@ def createWordSet(col):
             wordSet.update(words)
 
     return wordSet
+
+
+def invalidateWordSetCache():
+    wordSetCache.clear()
+    blacklistedNoteIds.clear()
