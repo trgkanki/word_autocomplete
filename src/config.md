@@ -1,5 +1,10 @@
 # Word autocompltete - configuration
 
+## blacklistDecks
+
+- List of deck ids to blacklist
+- Default: []
+  
 ## firstCommitHotkey
 
 - Pressing this key will commit the first suggestion
