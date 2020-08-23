@@ -2,5 +2,7 @@
   "python.linting.enabled": true,
   "cSpell.words": [
     "jssrc"
-  ]
+  ],
+  "licenser.author": "Hyun Woo Park",
+  "licenser.license": "AGPLv3"
 }
