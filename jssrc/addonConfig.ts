@@ -13,16 +13,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-const shelljs = require('shelljs')
-const fs = require('fs')
-const { getRepoName } = require('./gitCommand')
-
-exports.updateFilesVersionString = async function (newVersion, changelogMessage) {
-  const repoName = await getRepoName()
-  console.log(`Updating to "${repoName} v${newVersion}"`)
-
-  shelljs.sed('-i', /"version": "(.+?)"/, `"version": "${newVersion}"`, 'package.json')
-  shelljs.sed('-i', /^ {2}"version": "(.+?)"/, `  "version": "${newVersion}"`, 'package-lock.json')
-  shelljs.sed('-i', /^# .+v(\d+)\.(\d+)\.(\d+)[i.](\d+)$/m, `# ${repoName} v${newVersion}`, 'src/__init__.py')
-  fs.writeFileSync('src/VERSION', newVersion)
+/**
+ * Retrieve addon config set on Anki side. Python side uploads addon config to
+ * user's media folder.
+ */
+export async function getAddonConfig (): Promise<any> {
+  const data = await fetch(`/_addon_config_${ADDON_UUID.replace('-', '_')}.json`)
+  return await data.json()
 }
