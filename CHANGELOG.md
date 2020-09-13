@@ -2,6 +2,11 @@
 
 [comment]: # (DO NOT MODIFY. new changelog goes here)
 
+## 20.9.13i202 (2020-09-14)
+
+- Fix: config UI shows deck as sorted
+- Fix: faster words collection
+
 ## 20.8.23i91 (2020-08-23)
 
 - Support blacklisting decks.
