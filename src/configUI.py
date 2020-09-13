@@ -62,6 +62,7 @@ def addonConfigWindow(dlg, allDecks, config):
                     ListBox(allDecks, renderer=lambda d: d["name"])
                     .multiselect(QAbstractItemView.MultiSelection)
                     .model(config, index="blacklistDecks")
+                    .sorted()
                 )
 
     with HStack():
