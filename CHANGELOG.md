@@ -2,6 +2,10 @@
 
 [comment]: # (DO NOT MODIFY. new changelog goes here)
 
+## 20.10.20i65 (2020-10-20)
+
+syncjsconfig fix
+
 ## 20.9.13i202 (2020-09-14)
 
 - Fix: config UI shows deck as sorted
