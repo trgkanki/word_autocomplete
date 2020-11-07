@@ -146,7 +146,8 @@ export function queueAutocomplete (query: string | null): void {
       clearAutocompleteSpan()
     } else {
       let html = `
-        <span class='candidate' title='Press ${config.firstCommitHotkey}'>
+        <span class='candidate' title='Press ${config.firstCommitHotkey} or ${config.numberedCommitHotkey.replace('?', '1')}'>
+          <span class='candidate-number'>${candidateTitleList[0]}</span>
           ${autocomplete[0]}
         </span>`
       for (let i = 1; i < autocomplete.length; i++) {
