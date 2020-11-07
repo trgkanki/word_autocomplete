@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { getCaretParentElement, getCaretCharacterOffsetWithin, setCursorAt } from './caret'
-import $ from 'jquery'
+
 const removeDiacritics = require('diacritics').remove
 
 function getWordStart (text: string, from: number, allowTrailingSpaces = false): number[] | null {
@@ -51,9 +51,8 @@ function getWordStart (text: string, from: number, allowTrailingSpaces = false):
 export function getCurrentQuery (): string | null {
   const container = getCaretParentElement()
   if (!container) return null
-  const $container = $(container)
   const cursorAt = getCaretCharacterOffsetWithin(container)
-  const text = $container.text()
+  const text = container.textContent || ''
   const wordStart = getWordStart(text, cursorAt)
   if (wordStart == null) return null
   return text.substring(wordStart[0], cursorAt)

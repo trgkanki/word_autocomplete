@@ -14,7 +14,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ranker } from './ranker'
-import $ from 'jquery'
 import { replaceCurrentQuery } from './query'
 import config from './config'
 import './style.scss'
@@ -63,20 +62,22 @@ export function getAutocompleteList (needle: string, callback: (candidates: stri
   setTimeout(checker, 1)
 }
 
-export function getAutoCompleterSpan (): JQuery<HTMLElement> {
-  let $el = $('.wautocompleter')
-  if ($el.length === 0) {
-    $el = $('<span></span>')
-      .addClass('wautocompleter')
-      .appendTo('body')
+export function getAutoCompleterSpan (): HTMLElement {
+  const els = document.getElementsByClassName('wautocompleter')
+  if (els.length === 0) {
+    const el = document.createElement('span')
+    el.classList.add('wautocompleter')
+    document.body.append(el)
+    return el
+  } else {
+    return els[0] as HTMLElement
   }
-  return $el
 }
 
 export function clearAutocompleteSpan (): void {
-  const $el = getAutoCompleterSpan()
-  $el.data('autocomplete', null)
-  $el.addClass('hidden')
+  const el = getAutoCompleterSpan()
+  delete el.dataset.autocomplete
+  el.classList.add('hidden')
 }
 
 let isFindingAutocomplete = false
@@ -84,12 +85,14 @@ let anotherAutocompleteQueued: string | null = null
 let issueAutocompleteQueued: number | null = null
 
 export function issueAutocomplete (index: number): void {
-  const $el = getAutoCompleterSpan()
-  const candidates = $el.data('autocomplete')
-  if (candidates == null) return // No autocomplete available.
+  const el = getAutoCompleterSpan()
+  const acData = el.dataset.autocomplete
+  if (!acData) return // No autocomplete available.
+
+  const candidates = JSON.parse(acData)
   const candidateIndex = index
   if (candidates.length > candidateIndex) {
-    replaceCurrentQuery($el.data('autocomplete')[candidateIndex])
+    replaceCurrentQuery(candidates[candidateIndex])
     clearAutocompleteSpan()
   }
 }
@@ -136,7 +139,7 @@ export function queueAutocomplete (query: string | null): void {
     return
   }
 
-  const $el = getAutoCompleterSpan()
+  const el = getAutoCompleterSpan()
   isFindingAutocomplete = true
   getAutocompleteList(query, function (autocomplete) {
     if (autocomplete.length === 0 || !currentField) {
@@ -157,13 +160,11 @@ export function queueAutocomplete (query: string | null): void {
       const { x: caretX, y: caretY } = getCaretPositionByViewport()
       const left = caretX + pageXOffset
       const top = pageYOffset + ((caretY < window.innerHeight - 100) ? caretY + 30 : Math.max(0, caretY - 30))
-      $el.html(html)
-      $el.data('autocomplete', autocomplete)
-      $el.css({
-        left,
-        top
-      })
-      $el.removeClass('hidden')
+      el.innerHTML = html
+      el.dataset.autocomplete = JSON.stringify(autocomplete)
+      el.style.left = left + 'px'
+      el.style.top = top + 'px'
+      el.classList.remove('hidden')
     }
     isFindingAutocomplete = false
     popTaskQueue()

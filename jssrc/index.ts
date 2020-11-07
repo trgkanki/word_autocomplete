@@ -19,8 +19,6 @@ import $ from 'jquery'
 import hotkeys from 'hotkeys-js'
 import config from './config'
 
-hotkeys.filter = (): boolean => true
-
 window._wcInit = function (firstCommitHotkey: string, numberedCommitHotkey: string): void {
   if (window._wcInitialized) return
   window._wcInitialized = true
@@ -29,6 +27,8 @@ window._wcInit = function (firstCommitHotkey: string, numberedCommitHotkey: stri
   config.numberedCommitHotkey = numberedCommitHotkey
 
   // Hotkeys
+  hotkeys.filter = (): boolean => true
+
   hotkeys(firstCommitHotkey, function (event) {
     event.preventDefault()
     queueAutocompleteIssue(0)
@@ -46,8 +46,8 @@ window._wcInit = function (firstCommitHotkey: string, numberedCommitHotkey: stri
   }
 
   hotkeys('esc', function (event) {
-    const $el = getAutoCompleterSpan()
-    if ($el.data('autocomplete')) {
+    const el = getAutoCompleterSpan()
+    if (el.dataset.autocomplete) {
       event.preventDefault()
       clearAutocompleteSpan()
     }
