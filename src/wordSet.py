@@ -95,10 +95,15 @@ def createWordSet(col):
         if mid == iocc_mid:
             field = joinFields(splitFields(field)[1:])
 
-        field = re.sub(r"\[sound:.*?\]", " ", field)
-        field = re.sub(r"<\w*script.*?>(.|\n)*?<\s*/script\s*>", " ", field)
-        field = re.sub(r"\[latex\](.|\n)*?\[/latex\]", " ", field)
-        field = re.sub(r"<.*?>", " ", field)
+        field = re.sub(
+            r"\[sound:.*?\]|"
+            + r"<\w*script.*?>(.|\n)*?<\s*/script\s*>|"
+            + r"\[latex\](.|\n)*?\[/latex\]|"
+            + r"<.*?>",
+            " ",
+            field,
+        )
+
         words = [w.lower() for w in alphaNumeric.findall(field)]
         _nidWordsMap[nid] = words
 
