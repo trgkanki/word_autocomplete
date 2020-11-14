@@ -32,16 +32,17 @@ import re
 from .utils.configrw import getConfig
 from anki.utils import splitFields, joinFields
 
-wordSetCache = {}
-blacklistedNoteIds = set()
 alphaNumeric = re.compile("[a-zA-ZÀ-ú][a-zA-ZÀ-ú0-9]{4,}")
+
+
+_lastMod = 0
+_nidDidMap = {}
+_nidWordsMap = {}
 
 
 def createWordSet(col):
     """ Initialize wordSet from preexisting collections """
-    global wordSetCache, alphaNumeric
-
-    wordSet = set()
+    global wordSetCache, alphaNumeric, _lastMod
 
     # Hack for image occlusion enhanced type model
     # ID field (first field) of io_occ addon note type should be
@@ -70,39 +71,50 @@ def createWordSet(col):
             cache[did] = shouldIgnore
             return shouldIgnore
 
-    for (nid, field, mid) in col.db.execute("select id, flds, mid from notes"):
-        if nid in blacklistedNoteIds:
+    # update _nidDidMap for updated cards
+    nidDidList = col.db.all("select nid, did from cards where mod > ?", _lastMod)
+    for nid, _ in nidDidList:
+        _nidDidMap[nid] = set()
+
+    for nid, did in nidDidList:
+        _nidDidMap[nid].add(did)
+        if shouldIgnoreDid(did):
+            # Note newly on blacklisted set
+            _nidWordsMap[nid] = set()
+
+    # update _nidWordsMap for updated cards
+    for (nid, field, mid) in col.db.execute(
+        "select id, flds, mid from notes where mod > ?", _lastMod
+    ):
+        if any(shouldIgnoreDid(did) for did in _nidDidMap[nid]):
+            # Blacklisted card
+            _nidWordsMap[nid] = set()
             continue
 
-        try:
-            wordSet.update(wordSetCache[field])
-        except KeyError:
-            if all(
-                shouldIgnoreDid(did)
-                for did in col.db.list(
-                    "select did from cards where nid = ? order by ord", nid
-                )
-            ):
-                blacklistedNoteIds.add(nid)
-                continue
+        # Ignore first field of image occlusion enhanced note
+        if mid == iocc_mid:
+            field = joinFields(splitFields(field)[1:])
 
-            rawField = field
+        field = re.sub(r"\[sound:.*?\]", " ", field)
+        field = re.sub(r"<\w*script.*?>(.|\n)*?<\s*/script\s*>", " ", field)
+        field = re.sub(r"\[latex\](.|\n)*?\[/latex\]", " ", field)
+        field = re.sub(r"<.*?>", " ", field)
+        words = [w.lower() for w in alphaNumeric.findall(field)]
+        _nidWordsMap[nid] = words
 
-            # Ignore first field of image occlusion enhanced note
-            if mid == iocc_mid:
-                field = joinFields(splitFields(field)[1:])
+    _lastMod = col.mod
 
-            field = re.sub(r"\[sound:.*?\]", " ", field)
-            field = re.sub(r"<\w*script.*?>(.|\n)*?<\s*/script\s*>", " ", field)
-            field = re.sub(r"\[latex\](.|\n)*?\[/latex\]", " ", field)
-            field = re.sub(r"<.*?>", " ", field)
-            words = [w.lower() for w in alphaNumeric.findall(field)]
-            wordSetCache[rawField] = words
-            wordSet.update(words)
+    # Collect wordset
+    wordSet = set()
+    for words in _nidWordsMap.values():
+        wordSet.update(words)
 
     return wordSet
 
 
 def invalidateWordSetCache():
-    wordSetCache.clear()
-    blacklistedNoteIds.clear()
+    global _lastMod
+
+    _nidDidMap.clear()
+    _nidWordsMap.clear()
+    _lastMod = 0
