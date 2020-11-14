@@ -16,7 +16,7 @@
 import { getAutoCompleterSpan, clearAutocompleteSpan, queueAutocompleteIssue, queueAutocomplete } from './autocomplete'
 import { getCurrentQuery } from './query'
 import $ from 'jquery'
-import hotkeys from 'hotkeys-js'
+import Mousetrap from 'mousetrap'
 import config from './config'
 
 window._wcInit = function (firstCommitHotkey: string, numberedCommitHotkey: string): void {
@@ -26,10 +26,13 @@ window._wcInit = function (firstCommitHotkey: string, numberedCommitHotkey: stri
   config.firstCommitHotkey = firstCommitHotkey
   config.numberedCommitHotkey = numberedCommitHotkey
 
-  // Hotkeys
-  hotkeys.filter = (): boolean => true
+  Mousetrap.prototype.stopCallback = function () {
+    if (this.paused) {
+      return true
+    }
+  }
 
-  hotkeys(firstCommitHotkey, function (event) {
+  Mousetrap.bind(firstCommitHotkey, function (event) {
     event.preventDefault()
     queueAutocompleteIssue(0)
   })
@@ -37,7 +40,7 @@ window._wcInit = function (firstCommitHotkey: string, numberedCommitHotkey: stri
   if (numberedCommitHotkey && numberedCommitHotkey.indexOf('?') !== -1) {
     for (let i = 1; i <= 9; i++) {
       (function (i): void {
-        hotkeys(numberedCommitHotkey.replace('?', i.toString()), function (event) {
+        Mousetrap.bind(numberedCommitHotkey.replace('?', i.toString()), function (event) {
           event.preventDefault()
           queueAutocompleteIssue(i - 1)
         })
@@ -45,7 +48,7 @@ window._wcInit = function (firstCommitHotkey: string, numberedCommitHotkey: stri
     }
   }
 
-  hotkeys('esc', function (event) {
+  Mousetrap.bind('esc', function (event) {
     const el = getAutoCompleterSpan()
     if (el.dataset.autocomplete) {
       event.preventDefault()
