@@ -429,3 +429,5 @@ meta.json
 # .min.js is a compiled thing
 *.min.js
 *.js.map
+
+.vscode
