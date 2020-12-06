@@ -1,6 +1,6 @@
 {
   "name": "word_autocomplete",
-  "version": "20.10.20i65",
+  "version": "20.12.6i158",
   "description": "template for trgkanki's addon",
   "scripts": {
     "postinstall": "python3 -m pip install -r requirements.txt",
