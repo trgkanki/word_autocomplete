@@ -54,6 +54,7 @@ export function getCurrentQuery (): string | null {
   const cursorAt = getCaretCharacterOffsetWithin(container)
   const text = container.textContent || ''
   const wordStart = getWordStart(text, cursorAt)
+  console.log(text, wordStart, cursorAt)
   if (wordStart == null) return null
   return text.substring(wordStart[0], cursorAt)
 }
@@ -76,9 +77,9 @@ export function replaceCurrentQuery (newText: string): void {
     newText = newText.substring(0, 1).toUpperCase() + newText.substring(1)
   }
   const repText =
-              text.substring(0, wordStart) +
-              newText +
-              text.substring(cursorAt)
+    text.substring(0, wordStart) +
+    newText +
+    text.substring(cursorAt)
   container.textContent = repText
   setCursorAt(container, wordStart + newText.length)
 }

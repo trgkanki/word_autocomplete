@@ -57,7 +57,7 @@ window._wcInit = function (firstCommitHotkey: string, numberedCommitHotkey: stri
   })
 
   // Autocomplete candidate windows
-  $(document).on('input', '[contenteditable]', function () {
+  $(document).on('keyup', '[contenteditable]', function (e) {
     const query = getCurrentQuery()
     queueAutocomplete(query)
   })
