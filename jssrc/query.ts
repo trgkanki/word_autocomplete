@@ -47,10 +47,22 @@ function getWordStart (text: string, from: number, allowTrailingSpaces = false):
   else return [j + 1, -1]
 }
 
+/**
+ * Normalizes DOM element so that adjacent text nodes are merged.
+ * this makes sure that `textContent` stays the same.
+ */
+function normalizeTextContainer () {
+  const fieldsElement = document.getElementById('fields')
+  if (fieldsElement) fieldsElement.normalize()
+}
+
 // https://github.com/gr2m/contenteditable-autocomplete
 export function getCurrentQuery (): string | null {
+  normalizeTextContainer()
+
   const container = getCaretParentElement()
   if (!container) return null
+
   const cursorAt = getCaretCharacterOffsetWithin(container)
   const text = container.textContent || ''
   const wordStart = getWordStart(text, cursorAt)
@@ -61,6 +73,8 @@ export function getCurrentQuery (): string | null {
 
 // https://github.com/gr2m/contenteditable-autocomplete
 export function replaceCurrentQuery (newText: string): void {
+  normalizeTextContainer()
+
   const container = getCaretParentElement()
   if (!container) return
 
