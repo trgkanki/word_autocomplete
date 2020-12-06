@@ -28,16 +28,12 @@ from anki.hooks import wrap
 from aqt.utils import askUser
 
 from .utils.resource import readResource
-from .utils.configrw import getConfig, setConfigEditor
+from .utils.configrw import getConfig
 from .wordSet import createWordSet
 from .utils import openChangelog
 from .utils import uuid  # duplicate UUID checked here
-from .configUI import configEditor
 import re
 import os
-
-
-setConfigEditor(configEditor)
 
 
 def afterSetNote(self, note, hide=True, focusTo=None):
