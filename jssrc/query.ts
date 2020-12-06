@@ -66,7 +66,6 @@ export function getCurrentQuery (): string | null {
   const cursorAt = getCaretCharacterOffsetWithin(container)
   const text = container.textContent || ''
   const wordStart = getWordStart(text, cursorAt)
-  console.log(text, wordStart, cursorAt)
   if (wordStart == null) return null
   return text.substring(wordStart[0], cursorAt)
 }
