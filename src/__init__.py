@@ -32,8 +32,7 @@ from .utils.configrw import getConfig
 from .wordSet import createWordSet
 from .utils import openChangelog
 from .utils import uuid  # duplicate UUID checked here
-import re
-import os
+from .utils import debugLog  # debug log registered here
 
 
 def afterSetNote(self, note, hide=True, focusTo=None):
