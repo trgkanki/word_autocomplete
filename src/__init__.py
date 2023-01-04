@@ -24,7 +24,7 @@ Code borrowed from:
 """
 
 from aqt.editor import Editor
-from anki.hooks import wrap
+from anki.hooks import addHook
 from aqt.utils import askUser
 
 from .utils.resource import readResource
@@ -35,9 +35,9 @@ from .utils import uuid  # duplicate UUID checked here
 from .utils import debugLog  # debug log registered here
 
 
-def afterSetNote(self, note, hide=True, focusTo=None):
+def afterLoadNote(self):
     if not self.web:
-        # This can happen by other addon's fault. afterSetNote shouldn't
+        # This can happen by other addon's fault. afterLoadNote shouldn't
         # throw exception on this case, as with error user cannot close
         # Anki with editor open, losing all the progress he/she've made.
         return
@@ -53,4 +53,4 @@ def afterSetNote(self, note, hide=True, focusTo=None):
     self.web.eval("_wcInitWordset([" + "".join('"%s", ' % w for w in wordSet) + "])")
 
 
-Editor.setNote = wrap(Editor.setNote, afterSetNote, "after")
+addHook("loadNote", afterLoadNote)
