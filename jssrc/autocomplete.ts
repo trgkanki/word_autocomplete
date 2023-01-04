@@ -18,8 +18,7 @@ import { replaceCurrentQuery } from './query'
 import config from './config'
 import './style.scss'
 import { getCaretPositionByViewport } from './caret'
-
-const removeDiacritics = require('diacritics').remove
+import { remove as removeDiacritics } from 'diacritics'
 
 declare let currentField: Node | null
 let wordSet: string[] = [] // Original word set

@@ -14,8 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { getCaretParentElement, getCaretCharacterOffsetWithin, setCursorAt } from './caret'
-
-const removeDiacritics = require('diacritics').remove
+import { remove as removeDiacritics } from 'diacritics'
 
 function getWordStart (text: string, from: number, allowTrailingSpaces = false): number[] | null {
   text = removeDiacritics(text)
