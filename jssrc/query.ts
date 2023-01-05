@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { getCaretParentElement, getCaretCharacterOffsetWithin, setCursorAt } from './caret'
+import { getCaretParentElement, getCaretCharacterOffsetWithin, setCursorAt, getCurrentSelection } from './caret'
 import { remove as removeDiacritics } from 'diacritics'
 
 function getWordStart (text: string, from: number, allowTrailingSpaces = false): number[] | null {
@@ -50,19 +50,27 @@ function getWordStart (text: string, from: number, allowTrailingSpaces = false):
  * Normalizes DOM element so that adjacent text nodes are merged.
  * this makes sure that `textContent` stays the same.
  */
-function normalizeTextContainer () {
-  const fieldsElement = document.getElementById('fields')
-  if (fieldsElement) fieldsElement.normalize()
+function normalizeTextContainer (target: HTMLElement) {
+  if (target) {
+    if (target.shadowRoot) {
+      target.shadowRoot.normalize()
+    } else {
+      target.normalize()
+    }
+  }
 }
 
 // https://github.com/gr2m/contenteditable-autocomplete
-export function getCurrentQuery (): string | null {
-  normalizeTextContainer()
+export function getCurrentQuery (target: HTMLElement): string | null {
+  normalizeTextContainer(target)
 
-  const container = getCaretParentElement()
+  const selection = getCurrentSelection(target)
+  if (!selection) return null
+
+  const container = getCaretParentElement(selection)
   if (!container) return null
 
-  const cursorAt = getCaretCharacterOffsetWithin(container)
+  const cursorAt = getCaretCharacterOffsetWithin(selection, container)
   const text = container.textContent || ''
   const wordStart = getWordStart(text, cursorAt)
   if (wordStart == null) return null
@@ -70,13 +78,17 @@ export function getCurrentQuery (): string | null {
 }
 
 // https://github.com/gr2m/contenteditable-autocomplete
-export function replaceCurrentQuery (newText: string): void {
-  normalizeTextContainer()
+export function replaceCurrentQuery (target: HTMLElement, newText: string): void {
+  normalizeTextContainer(target)
 
-  const container = getCaretParentElement()
+  const selection = getCurrentSelection(target)
+  if (!selection) return
+
+  const container = getCaretParentElement(selection)
   if (!container) return
+  // TODO: check if container is within target
 
-  const cursorAt = getCaretCharacterOffsetWithin(container)
+  const cursorAt = getCaretCharacterOffsetWithin(selection, container)
   const text = container.textContent || ''
   const ws = getWordStart(text, cursorAt, true)
   if (ws == null) return

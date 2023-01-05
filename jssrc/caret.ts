@@ -13,13 +13,17 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export function getCaretParentElement (): Node | undefined {
-  const range = window.getSelection()?.getRangeAt(0)
+export function getCurrentSelection (target: HTMLElement) {
+  const selectionRoot = target.shadowRoot || document
+  return selectionRoot.getSelection()
+}
+
+export function getCaretParentElement (selection: Selection): Node | undefined {
+  const range = selection.getRangeAt(0)
   return range?.startContainer
 }
 
-export function getCaretCharacterOffsetWithin (element: Node): number {
-  const selection = window.getSelection()
+export function getCaretCharacterOffsetWithin (selection: Selection, element: Node): number {
   if (selection && selection.rangeCount > 0) {
     const range = selection.getRangeAt(0)
     if (!range) return 0
@@ -32,8 +36,7 @@ export function getCaretCharacterOffsetWithin (element: Node): number {
   }
 }
 
-export function getCaretPositionByViewport () {
-  const selection = window.getSelection()
+export function getCaretPositionByViewport (selection: Selection | null) {
   if (!selection) return { x: 0, y: 0 }
   const el = document.createElement('span')
   selection.getRangeAt(0).insertNode(el)

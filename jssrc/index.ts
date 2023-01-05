@@ -15,7 +15,6 @@
 
 import { getAutoCompleterSpan, clearAutocompleteSpan, queueAutocompleteIssue, queueAutocomplete } from './autocomplete'
 import { getCurrentQuery } from './query'
-import $ from 'jquery'
 import Mousetrap from 'mousetrap'
 import config from './config'
 
@@ -56,13 +55,24 @@ window._wcInit = function (firstCommitHotkey: string, numberedCommitHotkey: stri
     }
   })
 
-  // Autocomplete candidate windows
-  $(document).on('keyup', '[contenteditable]', function (e) {
-    const query = getCurrentQuery()
-    queueAutocomplete(query)
+  // const richEditables = document.getElementsByClassName('rich-text-editable')
+
+  document.addEventListener('keyup', (e) => {
+    const target = e.target as HTMLElement
+    if (!target) return
+
+    if (target.classList.contains('rich-text-editable') || target.isContentEditable) {
+      const query = getCurrentQuery(target)
+      queueAutocomplete(target, query)
+    }
   })
 
-  $(document).on('blur', '[contenteditable]', function () {
-    clearAutocompleteSpan()
+  document.addEventListener('blur', (e) => {
+    const target = e.target as HTMLElement
+    if (!target) return
+
+    if (target.classList.contains('rich-text-editable') || target.isContentEditable) {
+      clearAutocompleteSpan()
+    }
   })
 }

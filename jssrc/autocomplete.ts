@@ -17,10 +17,10 @@ import { ranker } from './ranker'
 import { replaceCurrentQuery } from './query'
 import config from './config'
 import './style.scss'
-import { getCaretPositionByViewport } from './caret'
+import { getCaretPositionByViewport, getCurrentSelection } from './caret'
 import { remove as removeDiacritics } from 'diacritics'
 
-declare let currentField: Node | null
+let lastAutocompleteIssuedField: HTMLElement | null = null
 let wordSet: string[] = [] // Original word set
 let normalizedWordSet: string[] = [] // One used for autocomplete matching
 
@@ -77,6 +77,7 @@ export function clearAutocompleteSpan (): void {
   const el = getAutoCompleterSpan()
   delete el.dataset.autocomplete
   el.classList.add('hidden')
+  lastAutocompleteIssuedField = null
 }
 
 let isFindingAutocomplete = false
@@ -88,10 +89,12 @@ export function issueAutocomplete (index: number): void {
   const acData = el.dataset.autocomplete
   if (!acData) return // No autocomplete available.
 
+  if (!lastAutocompleteIssuedField) return
+
   const candidates = JSON.parse(acData)
   const candidateIndex = index
   if (candidates.length > candidateIndex) {
-    replaceCurrentQuery(candidates[candidateIndex])
+    replaceCurrentQuery(lastAutocompleteIssuedField, candidates[candidateIndex])
     clearAutocompleteSpan()
   }
 }
@@ -103,7 +106,7 @@ export function queueAutocompleteIssue (index: number): void {
 
 const candidateTitleList = '123456789'
 
-export function queueAutocomplete (query: string | null): void {
+export function queueAutocomplete (target: HTMLElement, query: string | null): void {
   query = query ? removeDiacritics(query) : query
 
   if (isFindingAutocomplete) {
@@ -128,7 +131,7 @@ export function queueAutocomplete (query: string | null): void {
     }
     if (anotherAutocompleteQueued) {
       anotherAutocompleteQueued = null
-      queueAutocomplete(anotherAutocompleteQueued)
+      queueAutocomplete(target, anotherAutocompleteQueued)
     }
   }
 
@@ -140,8 +143,9 @@ export function queueAutocomplete (query: string | null): void {
 
   const el = getAutoCompleterSpan()
   isFindingAutocomplete = true
+  lastAutocompleteIssuedField = target
   getAutocompleteList(query, function (autocomplete) {
-    if (autocomplete.length === 0 || !currentField) {
+    if (autocomplete.length === 0 || !lastAutocompleteIssuedField) {
       clearAutocompleteSpan()
     } else {
       let html = `
@@ -157,7 +161,8 @@ export function queueAutocomplete (query: string | null): void {
           </span>`
       }
 
-      const { x: caretX, y: caretY } = getCaretPositionByViewport()
+      const selection = getCurrentSelection(lastAutocompleteIssuedField)
+      const { x: caretX, y: caretY } = getCaretPositionByViewport(selection)
       const left = caretX + pageXOffset
       const top = pageYOffset + ((caretY < window.innerHeight - 100) ? caretY + 30 : Math.max(0, caretY - 30))
       el.innerHTML = html
