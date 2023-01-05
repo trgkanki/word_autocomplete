@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { getAutoCompleterSpan, clearAutocompleteSpan, queueAutocompleteIssue, queueAutocomplete } from './autocomplete'
+import { getAutoCompleterSpan, clearAutocompleteSpan, queueAutocompleteIssue, queueAutocomplete, isAutocompleteOngoing } from './autocomplete'
 import { getCurrentQuery } from './query'
 import Mousetrap from 'mousetrap'
 import config from './config'
@@ -32,8 +32,10 @@ window._wcInit = function (firstCommitHotkey: string, numberedCommitHotkey: stri
   }
 
   Mousetrap.bind(firstCommitHotkey, function (event) {
-    event.preventDefault()
-    queueAutocompleteIssue(0)
+    if (isAutocompleteOngoing()) {
+      event.preventDefault()
+      queueAutocompleteIssue(0)
+    }
   })
 
   if (numberedCommitHotkey && numberedCommitHotkey.indexOf('?') !== -1) {

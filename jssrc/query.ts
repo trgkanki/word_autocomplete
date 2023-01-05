@@ -16,18 +16,26 @@
 import { getCaretParentElement, getCaretCharacterOffsetWithin, setCursorAt, getCurrentSelection } from './caret'
 import { remove as removeDiacritics } from 'diacritics'
 
-function getWordStart (text: string, from: number, allowTrailingSpaces = false): number[] | null {
+export interface GetWordStartResult {
+  wordStartPos: number
+  spaceCount: number
+}
+
+function getWordStart (text: string, from: number, allowTrailingSpaces = false): GetWordStartResult | null {
   text = removeDiacritics(text)
 
   let endedWithAlphabet = false
   let j = from - 1
-  let spaces = 0
+  let spaceCount = 0
+
+  // j := first non-space character
   if (allowTrailingSpaces) {
     for (; j >= 0; j--) {
       if (text.charAt(j) !== ' ') break
     }
-    spaces = (from - 1) - j
+    spaceCount = (from - 1) - j
   }
+
   for (; j >= 0; j--) {
     const ch = text.charAt(j)
     if (
@@ -42,8 +50,7 @@ function getWordStart (text: string, from: number, allowTrailingSpaces = false):
     } else break
   }
   if (!endedWithAlphabet) return null
-  else if (allowTrailingSpaces) return [j + 1, spaces]
-  else return [j + 1, -1]
+  return { wordStartPos: j + 1, spaceCount }
 }
 
 /**
@@ -74,7 +81,7 @@ export function getCurrentQuery (target: HTMLElement): string | null {
   const text = container.textContent || ''
   const wordStart = getWordStart(text, cursorAt)
   if (wordStart == null) return null
-  return text.substring(wordStart[0], cursorAt)
+  return text.substring(wordStart.wordStartPos, cursorAt)
 }
 
 // https://github.com/gr2m/contenteditable-autocomplete
@@ -92,18 +99,26 @@ export function replaceCurrentQuery (target: HTMLElement, newText: string): void
   const text = container.textContent || ''
   const ws = getWordStart(text, cursorAt, true)
   if (ws == null) return
-  const [wordStart, spaces] = ws
-  for (let i = 0; i < spaces; i++) newText += ' '
+  const { wordStartPos, spaceCount } = ws
+  for (let i = 0; i < spaceCount; i++) newText += ' '
 
   // First of oldText is capital → Capitalize
-  const oldText = text.substring(wordStart, cursorAt)
+  const oldText = text.substring(wordStartPos, cursorAt)
   if (oldText.charAt(0) === oldText.charAt(0).toUpperCase()) { // A-Z
     newText = newText.substring(0, 1).toUpperCase() + newText.substring(1)
   }
-  const repText =
-    text.substring(0, wordStart) +
-    newText +
-    text.substring(cursorAt)
+
+  const prefix = text.substring(0, wordStartPos)
+  const suffix = text.substring(cursorAt)
+
+  // Replace trailing space with &nbsp; if needed
+  if (suffix.length === 0 || suffix.startsWith(' ')) {
+    if (newText.endsWith(' ')) {
+      newText = newText.substring(0, newText.length - 1) + '\xa0'
+    }
+  }
+
+  const repText = prefix + newText + suffix
   container.textContent = repText
-  setCursorAt(container, wordStart + newText.length)
+  setCursorAt(container, wordStartPos + newText.length)
 }

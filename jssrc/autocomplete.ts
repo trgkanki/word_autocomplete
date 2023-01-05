@@ -29,6 +29,10 @@ window._wcInitWordset = function (newWordset: string[]): void {
   normalizedWordSet = newWordset.map(s => removeDiacritics(s))
 }
 
+export function isAutocompleteOngoing () {
+  return lastAutocompleteIssuedField !== null
+}
+
 export function getAutocompleteList (needle: string, callback: (candidates: string[]) => void): void {
   const N = wordSet.length
   const acceptanceTable = new Array(N)
@@ -94,7 +98,7 @@ export function issueAutocomplete (index: number): void {
   const candidates = JSON.parse(acData)
   const candidateIndex = index
   if (candidates.length > candidateIndex) {
-    replaceCurrentQuery(lastAutocompleteIssuedField, candidates[candidateIndex])
+    replaceCurrentQuery(lastAutocompleteIssuedField, candidates[candidateIndex] + ' ')
     clearAutocompleteSpan()
   }
 }
