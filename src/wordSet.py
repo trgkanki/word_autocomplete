@@ -41,7 +41,7 @@ _nidWordsMap = {}
 
 
 def createWordSet(col):
-    """ Initialize wordSet from preexisting collections """
+    """Initialize wordSet from preexisting collections"""
     global wordSetCache, alphaNumeric, _lastMod
 
     # Hack for image occlusion enhanced type model
@@ -83,7 +83,7 @@ def createWordSet(col):
             _nidWordsMap[nid] = set()
 
     # update _nidWordsMap for updated cards
-    for (nid, field, mid) in col.db.execute(
+    for nid, field, mid in col.db.execute(
         "select id, flds, mid from notes where mod > ?", _lastMod
     ):
         if any(shouldIgnoreDid(did) for did in _nidDidMap[nid]):
@@ -99,7 +99,7 @@ def createWordSet(col):
             r"\[sound:.*?\]|"
             + r"<\w*script.*?>(.|\n)*?<\s*/script\s*>|"
             + r"\[latex\](.|\n)*?\[/latex\]|"
-            + r"<.*?>",
+            + r"<(.|\n)*?>",
             " ",
             field,
         )
